@@ -19,6 +19,8 @@ money=None
 
 global birdget
 birdget=0
+global reloadbar
+reloadbar=100
 
 
 class Main_Background:
@@ -102,14 +104,16 @@ class Swallow:
             Swallow.imagehp = load_image('hpbar.png')
     def update(self):
         global birdget
+        global reloadbar
         global mx, my
         self.frame = (self.frame + 1) % 5
         self.x += self.xdir
         self.y += self.ydir
-        if self.hp>0:
+        if self.hp>0and reloadbar>=99:
             if self.x+30>=main_state.mx and self.x-30<=main_state.mx:
                 if self.y+30>=main_state.my and self.y-30<=main_state.my:
                     self.hp-=1
+                    reloadbar=0
                     main_state.mx=-1
                     main_state.my=-1
         elif self.hp==0:
@@ -135,7 +139,7 @@ class Swallow:
                 self.image1.clip_draw(self.frame * 378, 0, 378, 523, self.x, self.y,50,50)
             else:
                 self.image2.clip_draw(self.frame * 378, 0, 378, 523, self.x, self.y,50,50)
-        if self.hp < 3:
+        if self.hp <= 3:
             if self.hp >= 1:
                 self.imagehp.clip_draw(0, 0, 20, 10, self.x-20, self.y+20)
                 if self.hp >= 2:
@@ -151,35 +155,19 @@ class Main_UI:
         self.image.clip_draw(0, 0, 800, 600, self.x,self.y,)
 
 class Stone_reroad:
+
     def __init__(self):
         self.image1 = load_image('stone.png')
         self.image2 = load_image('reload.png')
-        self.reloadbar=100
     def update(self):
-        if self.reloadbar<100:
-            self.reloadbar+=1
+        global reloadbar
+        if reloadbar<100:
+            reloadbar+=1
 
     def draw(self):
         self.image1.clip_draw(0, 0, 800, 600, 30, 30, 50, 50)
-        self.image2.clip_draw(0, 0, 331, 27, 100, 30,100,10)
+        self.image2.clip_draw(0, 0, 331, 27, 100, 30,reloadbar,10)
 
-class Boy:
-    def __init__(self):
-        self.x, self.y = 0, 90
-        self.frame = 0
-        self.image = load_image('run_animation.png')
-        self.dir = 1
-
-    def update(self):
-        self.frame = (self.frame + 1) % 8
-        self.x += self.dir
-        if self.x >= 800:
-            self.dir = -1
-        elif self.x <= 0:
-            self.dir = 1
-
-    def draw(self):
-        self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
 
 
 def enter():
@@ -187,10 +175,11 @@ def enter():
     getbird = Getbird()
     main_ui = Main_UI()
     money=Money()
+    reload = Stone_reroad()
     main_background=Main_Background()
     windcursor=Windcursor()
     birds = [Swallow() for i in range(11)]
-    reload=Stone_reroad()
+
 
 def exit():
     global main_ui,birds,money,windcursor,getbird,main_background,reload
@@ -230,6 +219,7 @@ def handle_events():
 def update():
     global birdget
     windcursor.update()
+    reload.update()
     if birdget<1:
         for swallow in birds:
             swallow.update()
@@ -239,7 +229,7 @@ def update():
         if main_state.mx >= 383 and main_state.mx <= 559 and main_state.my >= 106 and main_state.my <= 175:
             game_framework.change_state(cage_state)
             birdget = 0
-    reload.update()
+
 
 
 def draw():
