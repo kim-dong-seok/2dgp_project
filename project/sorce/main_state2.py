@@ -150,6 +150,18 @@ class Main_UI:
     def draw(self):
         self.image.clip_draw(0, 0, 800, 600, self.x,self.y,)
 
+class Stone_reroad:
+    def __init__(self):
+        self.image1 = load_image('stone.png')
+        self.image2 = load_image('reload.png')
+        self.reloadbar=100
+    def update(self):
+        if self.reloadbar<100:
+            self.reloadbar+=1
+
+    def draw(self):
+        self.image1.clip_draw(0, 0, 800, 600, 30, 30, 50, 50)
+        self.image2.clip_draw(0, 0, 331, 27, 100, 30,100,10)
 
 class Boy:
     def __init__(self):
@@ -171,22 +183,24 @@ class Boy:
 
 
 def enter():
-    global main_ui,birds,money,windcursor,getbird,main_background
+    global main_ui,birds,money,windcursor,getbird,main_background,reload
     getbird = Getbird()
     main_ui = Main_UI()
     money=Money()
     main_background=Main_Background()
     windcursor=Windcursor()
     birds = [Swallow() for i in range(11)]
+    reload=Stone_reroad()
 
 def exit():
-    global main_ui,birds,money,windcursor,getbird,main_background
+    global main_ui,birds,money,windcursor,getbird,main_background,reload
     del(getbird)
     del (birds)
     del (main_ui)
     del (money)
     del (windcursor)
     del(main_background)
+    del(reload)
 
 def pause():
     pass
@@ -225,6 +239,7 @@ def update():
         if main_state.mx >= 383 and main_state.mx <= 559 and main_state.my >= 106 and main_state.my <= 175:
             game_framework.change_state(cage_state)
             birdget = 0
+    reload.update()
 
 
 def draw():
@@ -239,6 +254,7 @@ def draw():
     if birdget>0:
         getbird.draw()
     windcursor.draw()
+    reload.draw()
     delay(0.03)
     update_canvas()
 

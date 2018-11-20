@@ -25,6 +25,8 @@ movemy=-1
 global mx, my
 mx=-1
 my=-1
+global stone_count
+stone_count=0
 class Main_Background:
     def __init__(self):
         self.image = load_image('main_background.png')
@@ -129,6 +131,31 @@ class Draw_Plant:
     def draw(self):
         self.image1.clip_draw(0, 0, 51,49, self.x, self.y, 50, 50)
         #self.image2.clip_draw(0, 0, 70, 69, self.x, self.y, 70, 70)
+
+class Stone:
+    image1=None
+    def __init__(self):
+        self.y = random.randint(0, 378)
+        self.x = random.randint(0, 700)
+        if Stone.image1 == None:
+            Stone.image1 = load_image('stone.png')
+        self.hp=1
+    def update(self):
+        global stone_count
+        global mx, my
+        if self.hp>0:
+            if self.x+30>=mx and self.x-30<=mx:
+                if self.y+30>=my and self.y-30<=my:
+                    self.hp=0
+                    mx=-1
+                    my=-1
+                    stone_count+=1
+
+
+    def draw(self):
+        if self.hp>0:
+            self.image1.clip_draw(0, 0, 800, 600, self.x, self.y,20,20)
+
 class Field_State:
     image = None
     image2 = None
@@ -384,7 +411,7 @@ class Field_State:
                 self.font2.draw(self.screenx + 75, self.screeny + 35, '나쁨(하)', (255, 255, 0))
                 self.font2.draw(self.screenx + 5, self.screeny + 16, '상태: 수확 대기', (255, 255, 255))
 def enter():
-    global main_ui,money,windcursor,main_background,cagebird,field,seeds,seed_information,plant
+    global main_ui,money,windcursor,main_background,cagebird,field,seeds,seed_information,plant,stones
     main_ui = Main_UI()
     money=Money()
     main_background=Main_Background()
@@ -402,9 +429,10 @@ def enter():
     seeds=[Have_Seed() for i in range(10)]
     seeds[0].name=1
     seeds[0].count = 3
+    stones = [Stone() for i in range(10)]
 
 def exit():
-    global main_ui,money,windcursor,main_background,cagebird,field,seeds,seed_information,plant
+    global main_ui,money,windcursor,main_background,cagebird,field,seeds,seed_information,plant,stones
     del (main_ui)
     del (money)
     del (windcursor)
@@ -414,6 +442,7 @@ def exit():
     del(seeds)
     del(seed_information)
     del(plant)
+    del(stones)
 def pause():
     pass
 
@@ -444,8 +473,11 @@ def handle_events():
 
 def update():
     windcursor.update()
+    for stone in stones:
+        stone.update()
     for field_state in field:
         field_state.update()
+
 def draw():
 
     clear_canvas()
@@ -453,6 +485,8 @@ def draw():
     main_background.draw()
     main_ui.draw()
     money.draw()
+    for stone in stones:
+        stone.draw()
     for field_state in field:
         field_state.draw()
     windcursor.draw()
