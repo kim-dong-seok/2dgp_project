@@ -109,11 +109,12 @@ class Swallow:
         self.frame = (self.frame + 1) % 5
         self.x += self.xdir
         self.y += self.ydir
-        if self.hp>0and reloadbar>=99:
+        if self.hp>0and reloadbar>=100and main_state.stone_count>0:
             if self.x+30>=main_state.mx and self.x-30<=main_state.mx:
                 if self.y+30>=main_state.my and self.y-30<=main_state.my:
                     self.hp-=1
                     reloadbar=0
+                    main_state.stone_count-=1
                     main_state.mx=-1
                     main_state.my=-1
         elif self.hp==0:
@@ -159,15 +160,17 @@ class Stone_reroad:
     def __init__(self):
         self.image1 = load_image('stone.png')
         self.image2 = load_image('reload.png')
+        self.font = load_font('Gungsuh.TTF', 35)
     def update(self):
         global reloadbar
-        if reloadbar<100:
-            reloadbar+=1
+        if main_state.stone_count>=1:
+            if reloadbar<100:
+                reloadbar+=1
 
     def draw(self):
-        self.image1.clip_draw(0, 0, 800, 600, 30, 30, 50, 50)
-        self.image2.clip_draw(0, 0, 331, 27, 100, 30,reloadbar,10)
-
+        self.image1.clip_draw(0, 0, 800, 600, 50, 50, 80, 80)
+        self.image2.clip_draw(330-(3*reloadbar), 0, 660-(3*reloadbar), 37, 165, 30,150,15)
+        self.font.draw(80, 60, ' X %d'%main_state.stone_count, (255, 255, 255))
 
 
 def enter():
