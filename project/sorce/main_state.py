@@ -184,7 +184,7 @@ class Field_State:
         if Field_State.image6 == None:
             self.image6 = load_image('plant_part1_2.png')
         if Field_State.image7 == None:
-            self.image7 = load_image('gourd_stand.png')
+            self.image7 = load_image('gourd_hitting.png')
         self.x=0
         self.y=0
         self.screenx=0
@@ -197,9 +197,9 @@ class Field_State:
         self.scheck=0 #박씨 정보 확인
         self.sclick = 0 #박씨 클릭
         self.plant_part1=0 #발아기
-        self.part1_clock=10
+        self.part1_clock=5
         self.plant_part2 = 0 #성장기
-        self.part2_clock = 60
+        self.part2_clock = 5
         self.plant_part3 = 0 #성숙기
         self.part3_clock = 600
         self.fcount=0
@@ -211,8 +211,9 @@ class Field_State:
         self.part1_fcheck=0
         self.part2_fcheck = 0
         self.part3_fcheck = 0
+        self.hit=0
     def update(self):
-        global cclick
+        global cclick, mx, my
         plant.x=self.x+57
         plant.y = self.y + 57
         for field_state in field:
@@ -270,7 +271,11 @@ class Field_State:
                     self.plant_part3 = 1
                     self.plant_part2 = 2
                     self.first_time1 = get_time()
-
+                if self.x > 0 and self.x < mx and self.x + 114 > mx and self.hit==0: # 박 타기
+                    if self.y > 0 and self.y < my and self.y + 114 > my:
+                        self.hit=3
+                        mx = -1
+                        my = -1
             if self.plant_part1 == 0:
                 if self.fcheck < 1:
                     if self.x > 0 and self.x < movemx and self.x + 114 > movemx:
@@ -346,9 +351,11 @@ class Field_State:
         elif self.plant_part1==1:
             self.image6.clip_draw(0, 0, 70, 69, self.x+54, self.y+85, 70, 70)
         if self.plant_part2==1:
-            self.image7.clip_draw(0, 0, 296, 296, self.x + 57, self.y + 70, 50+(get_time() - self.first_time1)/2, 50+(get_time() - self.first_time1)/2)
+            self.image7.clip_draw(0, 0, 200, 200, self.x + 57, self.y + 70, 50+(get_time() - self.first_time1)/2, 50+(get_time() - self.first_time1)/2)
         if self.plant_part3 == 1:
-            self.image7.clip_draw(0, 0, 296, 296, self.x + 57, self.y + 70, 50 + 30,50 +30)
+            self.image7.clip_draw(0+(200*self.hit), 0, 200, 200, self.x + 57, self.y + 70, 100,100)
+            if self.hit>0:
+                self.hit-=1
         if self.mcheck==1:
             self.image.clip_draw(0, 0, 200 , 100, self.screenx+100,self.screeny+50,200,100)
             if self.fcheck==0 and self.plant_part1==0:
