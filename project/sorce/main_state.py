@@ -164,6 +164,7 @@ class Field_State:
     image5 = None
     image6 = None
     image7 = None
+    image8 = None
     def __init__(self):
         self.frame = 0
         self.seedkind=0
@@ -185,6 +186,8 @@ class Field_State:
             self.image6 = load_image('plant_part1_2.png')
         if Field_State.image7 == None:
             self.image7 = load_image('gourd_hitting.png')
+        if Field_State.image8 == None:
+            self.image8 = load_image('gourd_die.png')
         self.x=0
         self.y=0
         self.screenx=0
@@ -212,6 +215,8 @@ class Field_State:
         self.part2_fcheck = 0
         self.part3_fcheck = 0
         self.hit=0
+        self.hitting_count=0
+        self.gourd_die=0
     def update(self):
         global cclick, mx, my
         plant.x=self.x+57
@@ -271,11 +276,15 @@ class Field_State:
                     self.plant_part3 = 1
                     self.plant_part2 = 2
                     self.first_time1 = get_time()
+
                 if self.x > 0 and self.x < mx and self.x + 114 > mx and self.hit==0: # 박 타기
                     if self.y > 0 and self.y < my and self.y + 114 > my:
                         self.hit=3
+                        self.hitting_count+=1
                         mx = -1
                         my = -1
+                        if self.hitting_count==5:
+                            self.gourd_die=1
             if self.plant_part1 == 0:
                 if self.fcheck < 1:
                     if self.x > 0 and self.x < movemx and self.x + 114 > movemx:
