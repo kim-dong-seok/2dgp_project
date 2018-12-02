@@ -18,7 +18,7 @@ money=None
 global click
 cclick=0
 global playermoney
-playermoney=99999999
+playermoney=1000
 global movemx, movemy
 movemx=-1
 movemy=-1
@@ -33,7 +33,7 @@ class Main_Background:
         self.image = load_image('main_background.png')
         self.y = 300
         self.x = 400
-        self.bgm.set_volume(64)
+        self.bgm.set_volume(32)
         self.bgm.repeat_play()
     def draw(self):
         self.image.clip_draw(0, 0, 800, 600, self.x,self.y,)
@@ -140,6 +140,8 @@ class Stone:
     def __init__(self):
         self.y = random.randint(0, 378)
         self.x = random.randint(0, 700)
+        self.pick_up_sound = load_wav('pick_up.wav')
+        self.pick_up_sound.set_volume(64)
         if Stone.image1 == None:
             Stone.image1 = load_image('stone.png')
         self.hp=1
@@ -150,9 +152,11 @@ class Stone:
             if self.x+30>=mx and self.x-30<=mx:
                 if self.y+30>=my and self.y-30<=my:
                     self.hp=0
+                    self.pick_up_sound.play()
                     mx=-1
                     my=-1
                     stone_count+=1
+
 
 
     def draw(self):
@@ -191,6 +195,8 @@ class Field_State:
             self.image7 = load_image('gourd_hitting.png')
         if Field_State.image8 == None:
             self.image8 = load_image('gourd_die.png')
+        self.attack_sound = load_wav('attack.wav')
+        self.attack_sound.set_volume(64)
         self.x=0
         self.y=0
         self.screenx=0
@@ -218,7 +224,7 @@ class Field_State:
         self.gourd_die=0
         self.hit_delay=0
     def update(self):
-        global cclick, mx, my
+        global cclick, mx, my,playermoney
         plant.x=self.x+57
         plant.y = self.y + 57
         for field_state in field:
@@ -299,12 +305,14 @@ class Field_State:
 
                 if self.x > 0 and self.x < mx and self.x + 114 > mx and self.hit==0: # 박 타기
                     if self.y > 0 and self.y < my and self.y + 114 > my:
+                        self.attack_sound.play()
                         self.hit=3
                         self.hitting_count+=1
                         mx = -1
                         my = -1
                         if self.hitting_count==5:
                             self.gourd_die=1
+                            playermoney+=500
             if self.plant_part1 == 0:
                 if self.fcheck < 1:
                     if self.x > 0 and self.x < movemx and self.x + 114 > movemx:
