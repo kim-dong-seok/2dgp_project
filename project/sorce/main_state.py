@@ -29,9 +29,12 @@ global stone_count
 stone_count=0
 class Main_Background:
     def __init__(self):
+        self.bgm = load_music('main_music.mp3')
         self.image = load_image('main_background.png')
         self.y = 300
         self.x = 400
+        self.bgm.set_volume(64)
+        self.bgm.repeat_play()
     def draw(self):
         self.image.clip_draw(0, 0, 800, 600, self.x,self.y,)
 
