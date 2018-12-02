@@ -8,6 +8,7 @@ from pico2d import *
 import game_framework
 import title_state
 import main_state2
+import cage_state
 
 name = "MainState"
 boy = None
@@ -25,8 +26,15 @@ movemy=-1
 global mx, my
 mx=-1
 my=-1
-global stone_count
+global stone_count,field_stone
 stone_count=0
+field_stone=10
+global expedition_complete,start_time,expedition_tim
+expedition_complete=0
+start_time=0
+expedition_time=10
+
+
 class Main_Background:
     def __init__(self):
         self.bgm = load_music('main_music.mp3')
@@ -88,10 +96,11 @@ class Bird:
         self.hp=0
         self.sp=0
         self.expedition=0
-
+        self.start_time=0
+        self.last_time=0
+        self.expedition_time = 5
     def update(self):
         pass
-
     def draw(self):
         pass
 class Have_Seed:
@@ -107,6 +116,19 @@ class Have_Seed:
 
     def draw(self):
         pass
+class Expedition_success:
+    image = None
+    def __init__(self):
+        self.frame = 0
+        if Expedition_success.image == None:
+            self.image = load_image('success.png')
+
+    def update(self):
+        pass
+
+    def draw(self):
+        self.image.clip_draw(0, 0, 800, 600,400 ,300)
+
 class Seed_Information:
     image1 = None
     def __init__(self):
@@ -143,8 +165,9 @@ class Stone:
         self.pick_up_sound = load_wav('pick_up.wav')
         self.pick_up_sound.set_volume(64)
         if Stone.image1 == None:
-            Stone.image1 = load_image('stone.png')
+            Stone.image1 = load_image('stone1.png')
         self.hp=1
+        self.stone_delay = 100
     def update(self):
         global stone_count
         global mx, my
@@ -156,6 +179,13 @@ class Stone:
                     mx=-1
                     my=-1
                     stone_count+=1
+        if self.hp<=0:
+            self.stone_delay-=1
+        if self.stone_delay<=0:
+            self.y = random.randint(0, 378)
+            self.x = random.randint(0, 700)
+            self.hp = 1
+            self.stone_delay=500
 
 
 
@@ -172,6 +202,7 @@ class Field_State:
     image6 = None
     image7 = None
     image8 = None
+    image9 = None
     def __init__(self):
         self.frame = 0
         self.seedkind=0
@@ -195,6 +226,8 @@ class Field_State:
             self.image7 = load_image('gourd_hitting.png')
         if Field_State.image8 == None:
             self.image8 = load_image('gourd_die.png')
+        if Field_State.image9 == None:
+            self.image9 = load_image('gold.png')
         self.attack_sound = load_wav('attack.wav')
         self.attack_sound.set_volume(64)
         self.x=0
@@ -223,6 +256,7 @@ class Field_State:
         self.hitting_count=0
         self.gourd_die=0
         self.hit_delay=0
+        self.gold=0
     def update(self):
         global cclick, mx, my,playermoney
         plant.x=self.x+57
@@ -250,7 +284,14 @@ class Field_State:
             self.part3_fcheck = 0
             self.hitting_count = 0
             self.gourd_die = 0
-        if self.fcount == 3:
+        if self.gold==1:
+            if self.x > 0 and self.x < mx and self.x + 114 > mx:  # 돈줍기
+                if self.y > 0 and self.y < my and self.y + 114 > my:
+                    self.gold=0
+                    playermoney+=5000
+                    mx=-1
+                    my=-1
+        if self.fcount == 3 and self.gold==0:
             if self.plant_part1 == 1 and self.plant_part2 == 0:
 
                 if self.x > 0 and self.x < movemx and self.x + 114 > movemx:
@@ -311,8 +352,12 @@ class Field_State:
                         mx = -1
                         my = -1
                         if self.hitting_count==5:
+                            self.gold = 1
                             self.gourd_die=1
-                            playermoney+=500
+
+                            mx=-1
+                            my=-1
+
             if self.plant_part1 == 0:
                 if self.fcheck < 1:
                     if self.x > 0 and self.x < movemx and self.x + 114 > movemx:
@@ -394,11 +439,15 @@ class Field_State:
                 self.image7.clip_draw(0+(200*self.hit), 0, 200, 200, self.x + 57, self.y + 70, 100,100)
             else:
                 self.image8.clip_draw(0 + (200 * self.hit), 0, 200, 200, self.x + 57, self.y + 70, 100, 100)
+
             if self.hit_delay == 1:
                 self.hit_delay = 0
                 if self.hit > 0:
                     self.hit -= 1
             self.hit_delay += 1
+        if self.gold==1:
+            self.image9.clip_draw(0, 0, 800, 600, self.x + 57, self.y + 70, 100, 100)
+
         if self.mcheck==1:
             self.image.clip_draw(0, 0, 200 , 100, self.screenx+100,self.screeny+50,200,100)
             if self.fcheck==0 and self.plant_part1==0:
@@ -461,7 +510,9 @@ class Field_State:
                 self.font2.draw(self.screenx + 75, self.screeny + 35, '나쁨(하)', (255, 255, 0))
                 self.font2.draw(self.screenx + 5, self.screeny + 16, '상태: 수확 대기', (255, 255, 255))
 def enter():
-    global main_ui,money,windcursor,main_background,cagebird,field,seeds,seed_information,plant,stones
+    global main_ui,money,windcursor,main_background,cagebird,field,seeds,seed_information,plant,stones,expedition_success,image1,font1
+    image1 = load_image('stone1.png')
+    font1 = load_font('Gungsuh.TTF', 35)
     main_ui = Main_UI()
     money=Money()
     main_background=Main_Background()
@@ -480,9 +531,10 @@ def enter():
     seeds[0].name=1
     seeds[0].count = 3
     stones = [Stone() for i in range(10)]
+    expedition_success=Expedition_success()
 
 def exit():
-    global main_ui,money,windcursor,main_background,cagebird,field,seeds,seed_information,plant,stones
+    global main_ui,money,windcursor,main_background,cagebird,field,seeds,seed_information,plant,stones,expedition_success
     del (main_ui)
     del (money)
     del (windcursor)
@@ -493,6 +545,7 @@ def exit():
     del(seed_information)
     del(plant)
     del(stones)
+    del(expedition_success)
 def pause():
     pass
 
@@ -522,12 +575,24 @@ def handle_events():
 
 
 def update():
+    global expedition_complete,start_time
     windcursor.update()
     for stone in stones:
         stone.update()
     for field_state in field:
         field_state.update()
+    if start_time>0:
+        if expedition_time-(get_time()-start_time)<0:
+            expedition_complete=1
+            start_time=0
 
+    if expedition_complete> 0:
+        if mx >= 246 and mx <= 354 and my >= 106 and my <= 175:
+            expedition_complete=0
+            cage_state.expedition=0
+        if mx >= 383 and mx <= 559 and my >= 106 and my <= 175:
+            expedition_complete= 0
+            cage_state.expedition = 0
 def draw():
 
     clear_canvas()
@@ -539,6 +604,11 @@ def draw():
         stone.draw()
     for field_state in field:
         field_state.draw()
+    if expedition_complete > 0:
+        expedition_success.draw()
+
+    image1.clip_draw(0, 0, 800, 600, 50, 50, 80, 80)
+    font1.draw(80, 60, ' X %d' % stone_count, (255, 255, 255))
     windcursor.draw()
     delay(0.03)
     update_canvas()

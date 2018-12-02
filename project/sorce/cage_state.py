@@ -15,9 +15,11 @@ grass = None
 windcursor = None
 font = None
 money=None
-global confirm,expedition
+global confirm,expedition,start_time,expedition_time
 expedition=0
 confirm=0
+start_time=0
+expedition_time=10
 class Expedition_Confirm:
     image = None
     def __init__(self):
@@ -62,6 +64,18 @@ class Draw_bird:
         self.font.draw(220,463, '상처입은 닭둘기', (255, 255, 255))
         self.font.draw(220, 440, '체력: %d'%main_state.cagebird[1].hp, (255, 255, 255))
         self.font.draw(300, 440, '기력: %d' % main_state.cagebird[1].sp, (255, 255, 255))
+class expedition_success:
+    image = None
+    def __init__(self):
+        self.frame = 0
+        if expedition_success.image == None:
+            self.image = load_image('success.png')
+
+    def update(self):
+        pass
+
+    def draw(self):
+        self.image.clip_draw(0, 0, 800, 600,400 ,300)
 class Windcursor:
     image = None
     def __init__(self):
@@ -166,7 +180,7 @@ def handle_events():
 
 
 def update():
-    global confirm,expedition
+    global confirm,expedition,start_time
     windcursor.update()
     if main_state.mx >= 335 and main_state.mx <= 465 and main_state.my >=22  and main_state.my <= 104:
         game_framework.pop_state()
@@ -176,10 +190,15 @@ def update():
             confirm=0
         if main_state.mx >= 383 and main_state.mx <= 559 and main_state.my >= 106 and main_state.my <= 175:
             expedition=1
+            main_state.start_time = get_time()
+            main_state.my=-1
+            main_state.mx=-1
             main_state.cagebird[confirm].expedition=1
             confirm=0
     if main_state.mx >= 252 and main_state.mx <= 390 and main_state.my <= 420 and main_state.my >= 380:
         confirm = 1
+
+
 
 def draw():
 

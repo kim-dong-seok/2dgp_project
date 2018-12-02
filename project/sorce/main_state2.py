@@ -158,10 +158,10 @@ class Main_UI:
     def draw(self):
         self.image.clip_draw(0, 0, 800, 600, self.x,self.y,)
 
-class Stone_reroad:
+class Stone_reload:
 
     def __init__(self):
-        self.image1 = load_image('stone.png')
+        self.image1 = load_image('stone1.png')
         self.image2 = load_image('reload.png')
         self.font = load_font('Gungsuh.TTF', 35)
     def update(self):
@@ -181,7 +181,7 @@ def enter():
     getbird = Getbird()
     main_ui = Main_UI()
     money=Money()
-    reload = Stone_reroad()
+    reload = Stone_reload()
     main_background=Main_Background()
     windcursor=Windcursor()
     birds = [Swallow() for i in range(11)]
