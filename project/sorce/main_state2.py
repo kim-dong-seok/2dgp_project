@@ -94,7 +94,8 @@ class Swallow:
         self.xdir = 1
         self.ydir = 1
         self.hp=4
-
+        self.attack_sound = load_wav('attack.wav')
+        self.attack_sound.set_volume(64)
         if Swallow.image1 == None:
             Swallow.image1 = load_image('swallow.png')
 
@@ -113,6 +114,8 @@ class Swallow:
             if self.x+30>=main_state.mx and self.x-30<=main_state.mx:
                 if self.y+30>=main_state.my and self.y-30<=main_state.my:
                     self.hp-=1
+                    self.attack_sound.play()
+
                     reloadbar=0
                     main_state.stone_count-=1
                     main_state.mx=-1
@@ -165,7 +168,7 @@ class Stone_reroad:
         global reloadbar
         if main_state.stone_count>=1:
             if reloadbar<100:
-                reloadbar+=1
+                reloadbar+=2
 
     def draw(self):
         self.image1.clip_draw(0, 0, 800, 600, 50, 50, 80, 80)
