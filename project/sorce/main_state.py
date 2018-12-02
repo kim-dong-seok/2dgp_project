@@ -206,10 +206,6 @@ class Field_State:
         self.plant_part3 = 0 #성숙기
         self.part3_clock = 600
         self.fcount=0
-        self.first_time1=0
-        self.first_time2= 0
-        self.first_time3= 0
-        self.last_time = 0
         self.cclick=0
         self.part1_fcheck=0
         self.part2_fcheck = 0
@@ -217,6 +213,7 @@ class Field_State:
         self.hit=0
         self.hitting_count=0
         self.gourd_die=0
+        self.hit_delay=0
     def update(self):
         global cclick, mx, my
         plant.x=self.x+57
@@ -224,6 +221,26 @@ class Field_State:
         for field_state in field:
             if field_state.fcheck < 1:
                 self.fcount += 1
+        if self.gourd_die==1 and self.hit==0:
+            self.mcheck = 0  # 마우스 체크
+            self.fcheck = 0  # 필드 체크
+            self.pcheck = 0  # 심을지 확인
+            self.scheck = 0  # 박씨 정보 확인
+            self.sclick = 0  # 박씨 클릭
+            self.plant_part1 = 0  # 발아기
+            self.plant_part2 = 0  # 성장기
+            self.plant_part3 = 0  # 성숙기
+            self.fcount = 0
+            self.first_time1 = 0
+            self.first_time2 = 0
+            self.first_time3 = 0
+            self.last_time = 0
+            self.cclick = 0
+            self.part1_fcheck = 0
+            self.part2_fcheck = 0
+            self.part3_fcheck = 0
+            self.hitting_count = 0
+            self.gourd_die = 0
         if self.fcount == 3:
             if self.plant_part1 == 1 and self.plant_part2 == 0:
 
@@ -362,9 +379,15 @@ class Field_State:
         if self.plant_part2==1:
             self.image7.clip_draw(0, 0, 200, 200, self.x + 57, self.y + 70, 50+(get_time() - self.first_time1)/2, 50+(get_time() - self.first_time1)/2)
         if self.plant_part3 == 1:
-            self.image7.clip_draw(0+(200*self.hit), 0, 200, 200, self.x + 57, self.y + 70, 100,100)
-            if self.hit>0:
-                self.hit-=1
+            if self.gourd_die==0:
+                self.image7.clip_draw(0+(200*self.hit), 0, 200, 200, self.x + 57, self.y + 70, 100,100)
+            else:
+                self.image8.clip_draw(0 + (200 * self.hit), 0, 200, 200, self.x + 57, self.y + 70, 100, 100)
+            if self.hit_delay == 1:
+                self.hit_delay = 0
+                if self.hit > 0:
+                    self.hit -= 1
+            self.hit_delay += 1
         if self.mcheck==1:
             self.image.clip_draw(0, 0, 200 , 100, self.screenx+100,self.screeny+50,200,100)
             if self.fcheck==0 and self.plant_part1==0:
