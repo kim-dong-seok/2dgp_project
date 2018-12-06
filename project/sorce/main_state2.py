@@ -33,18 +33,22 @@ class Main_Background:
 
 class Getbird:
     image = None
-    image_fps =None
+    image2 = None
     def __init__(self):
         self.frame = 0
+        self.count=0
         if Getbird.image == None:
             self.image = load_image('chicken.png')
-
+        if Getbird.image2 == None:
+            self.image2 = load_image('get_swallow.png')
     def update(self):
         pass
 
     def draw(self):
-        self.image.clip_draw(0, 0, 800, 600,400 ,300)
-
+        if self.count==1:
+            self.image.clip_draw(0, 0, 800, 600,400 ,300)
+        if self.count==2:
+            self.image2.clip_draw(0, 0, 800, 600,400 ,300)
 class Windcursor:
     image = None
     image_fps =None
@@ -122,9 +126,29 @@ class Swallow:
                     main_state.my=-1
         elif self.hp==0:
             birdget=1
-            main_state.cagebird[1].name =1
-            main_state.cagebird[1].hp = 50
-            main_state.cagebird[1].sp = 30
+            getbird.count=random.randint(1,2)
+            if main_state.cagebird[1].name == 0:
+                if getbird.count==1:
+                    main_state.cagebird[1].name =1
+                    main_state.cagebird[1].hp = 50
+                    main_state.cagebird[1].sp = 30
+                    main_state.cagebird[1].expedition_time=5
+                if getbird.count==2:
+                    main_state.cagebird[1].name =2
+                    main_state.cagebird[1].hp = 80
+                    main_state.cagebird[1].sp = 50
+                    main_state.cagebird[1].expedition_time = 10
+            elif main_state.cagebird[1].name >= 0 and main_state.cagebird[2].name == 0:
+                if getbird.count==1:
+                    main_state.cagebird[2].name =1
+                    main_state.cagebird[2].hp = 50
+                    main_state.cagebird[2].sp = 30
+                    main_state.cagebird[2].expedition_time = 5
+                if getbird.count==2:
+                    main_state.cagebird[2].name =2
+                    main_state.cagebird[2].hp = 80
+                    main_state.cagebird[2].sp = 50
+                    main_state.cagebird[2].expedition_time = 10
             self.hp=-1
         if self.x >= 750:
             self.xdir = -1
@@ -157,7 +181,8 @@ class Main_UI:
         self.x = 400
     def draw(self):
         self.image.clip_draw(0, 0, 800, 600, self.x,self.y,)
-
+        main_state.main_ui.image2.clip_draw(0, 0, 32 * main_state.main_ui.exp, 84, 58 + 6 * main_state.main_ui.exp, 570,
+                                            13 * main_state.main_ui.exp, 34)
 class Stone_reload:
 
     def __init__(self):
@@ -168,7 +193,7 @@ class Stone_reload:
         global reloadbar
         if main_state.stone_count>=1:
             if reloadbar<100:
-                reloadbar+=2
+                reloadbar+=5
 
     def draw(self):
         self.image1.clip_draw(0, 0, 800, 600, 50, 50, 80, 80)
@@ -230,11 +255,14 @@ def update():
         for swallow in birds:
             swallow.update()
     if birdget > 0:
+
         if main_state.mx >= 246 and main_state.mx <= 354 and main_state.my >= 106 and main_state.my <= 175:
             birdget=0
+
         if main_state.mx >= 383 and main_state.mx <= 559 and main_state.my >= 106 and main_state.my <= 175:
             game_framework.change_state(cage_state)
             birdget = 0
+
 
 
 
@@ -251,6 +279,7 @@ def draw():
         getbird.draw()
     windcursor.draw()
     reload.draw()
+    main_state.quest.draw()
     delay(0.03)
     update_canvas()
 

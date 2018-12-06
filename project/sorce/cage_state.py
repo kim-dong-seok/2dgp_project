@@ -25,17 +25,52 @@ class Expedition_Confirm:
     def __init__(self):
         self.frame = 0
         self.image2 = load_image('Chicken2.png')
+        self.image3 = load_image('swallow_ch.png')
         self.font = load_font('Gungsuh.TTF', 30)
         if Expedition_Confirm.image == None:
             self.image = load_image('expedition.png')
 
     def update(self):
-        pass
+        global confirm
+        if confirm == 1:
+            if main_state.mx >= 246 and main_state.mx <= 354 and main_state.my >= 106 and main_state.my <= 175:
+                confirm = 0
+            if main_state.mx >= 383 and main_state.mx <= 559 and main_state.my >= 106 and main_state.my <= 175:
+
+                main_state.start_time = get_time()
+                main_state.my = -1
+                main_state.mx = -1
+                main_state.cagebird[1].expedition = 1
+                confirm = 0
+        if confirm == 2:
+            if main_state.mx >= 246 and main_state.mx <= 354 and main_state.my >= 106 and main_state.my <= 175:
+                confirm = 0
+            if main_state.mx >= 383 and main_state.mx <= 559 and main_state.my >= 106 and main_state.my <= 175:
+
+                main_state.start_time = get_time()
+                main_state.my = -1
+                main_state.mx = -1
+                main_state.cagebird[2].expedition = 1
+                confirm = 0
 
     def draw(self):
-        self.image.clip_draw(0, 0, 800, 600,400 ,300)
-        self.image2.clip_draw(0, 0, 210, 164, 400, 370, 200, 200)
-        self.font.draw(290, 260, '상처입은 닭둘기', (255, 255, 255))
+        if confirm==1 and main_state.cagebird[1].name==1:
+            self.image.clip_draw(0, 0, 800, 600,400 ,300)
+            self.image2.clip_draw(0, 0, 210, 164, 400, 370, 200, 200)
+            self.font.draw(290, 260, '상처입은 닭둘기', (255, 255, 255))
+        elif confirm==1 and main_state.cagebird[1].name==2:
+            self.image.clip_draw(0, 0, 800, 600,400 ,300)
+            self.image3.clip_draw(0, 0, 522, 273, 400, 370, 200, 200)
+            self.font.draw(290, 260, '상처입은 제비', (255, 255, 255))
+
+        if confirm==2 and main_state.cagebird[2].name==1:
+            self.image.clip_draw(0, 0, 800, 600,400 ,300)
+            self.image2.clip_draw(0, 0, 210, 164, 400, 370, 200, 200)
+            self.font.draw(290, 260, '상처입은 닭둘기', (255, 255, 255))
+        elif confirm==2 and main_state.cagebird[2].name==2:
+            self.image.clip_draw(0, 0, 800, 600,400 ,300)
+            self.image3.clip_draw(0, 0, 522, 273, 400, 370, 200, 200)
+            self.font.draw(290, 260, '상처입은 제비', (255, 255, 255))
 class Main_Background:
     image = None
     def __init__(self):
@@ -45,25 +80,51 @@ class Main_Background:
         self.x = 400
     def draw(self):
         self.image.clip_draw(0, 0, 800, 600, self.x,self.y,)
+        main_state.main_ui.image2.clip_draw(0, 0, 32 * main_state.main_ui.exp, 84, 58 + 6 * main_state.main_ui.exp, 572, 13 * main_state.main_ui.exp, 34)
 class Expeditioning:
     image = None
     def __init__(self):
         if Expeditioning.image==None:
             self.image = load_image('expeditioning.png')
     def draw(self):
-        for i in range(1,6):
-            if main_state.cagebird[i].expedition== 1:
-                self.image.clip_draw(0, 0, 300, 300,170 ,458)
+        if main_state.cagebird[1].expeditioning== 1 or main_state.cagebird[1].expedition==1:
+            self.image.clip_draw(0, 0, 300, 300,170 ,458)
+        if main_state.cagebird[2].expeditioning== 1 or main_state.cagebird[2].expedition==1:
+            self.image.clip_draw(0, 0, 300, 300,470 ,458)
 class Draw_bird:
+
     def __init__(self):
         self.image = load_image('Chicken2.png')
+        self.image2 = load_image('swallow_ch.png')
         self.font = load_font('Gungsuh.TTF', 20)
+    def update(self):
+        global confirm
+        if main_state.mx >= 252 and main_state.mx <= 390 and main_state.my <= 420 and main_state.my >= 380:
+            confirm = 1
+        if main_state.mx >= 552 and main_state.mx <= 690 and main_state.my <= 420 and main_state.my >= 380:
+            confirm=2
+
     def draw(self):
-        if main_state.cagebird[1].name>=1:
+        if main_state.cagebird[1].name==1:
             self.image.clip_draw(0, 0, 210, 164, 162,440,60,60)
-        self.font.draw(220,463, '상처입은 닭둘기', (255, 255, 255))
-        self.font.draw(220, 440, '체력: %d'%main_state.cagebird[1].hp, (255, 255, 255))
-        self.font.draw(300, 440, '기력: %d' % main_state.cagebird[1].sp, (255, 255, 255))
+            self.font.draw(220,463, '상처입은 닭둘기', (255, 255, 255))
+            self.font.draw(220, 440, '체력: %d'%main_state.cagebird[1].hp, (255, 255, 255))
+            self.font.draw(300, 440, '기력: %d' % main_state.cagebird[1].sp, (255, 255, 255))
+        if main_state.cagebird[1].name==2:
+            self.image2.clip_draw(0, 0, 522, 273, 162,440,60,60)
+            self.font.draw(220,463, '상처입은 제비', (255, 255, 255))
+            self.font.draw(220, 440, '체력: %d'%main_state.cagebird[1].hp, (255, 255, 255))
+            self.font.draw(300, 440, '기력: %d' % main_state.cagebird[1].sp, (255, 255, 255))
+        if main_state.cagebird[2].name==1:
+            self.image.clip_draw(0, 0, 210, 164, 462,440,60,60)
+            self.font.draw(520,463, '상처입은 닭둘기', (255, 255, 255))
+            self.font.draw(520, 440, '체력: %d'%main_state.cagebird[2].hp, (255, 255, 255))
+            self.font.draw(600, 440, '기력: %d' % main_state.cagebird[2].sp, (255, 255, 255))
+        if main_state.cagebird[2].name==2:
+            self.image2.clip_draw(0, 0, 522, 273, 462,440,60,60)
+            self.font.draw(520,463, '상처입은 제비', (255, 255, 255))
+            self.font.draw(520, 440, '체력: %d'%main_state.cagebird[2].hp, (255, 255, 255))
+            self.font.draw(600, 440, '기력: %d' % main_state.cagebird[2].sp, (255, 255, 255))
 class expedition_success:
     image = None
     def __init__(self):
@@ -119,24 +180,6 @@ class Main_UI:
         self.image.clip_draw(0, 0, 800, 600, self.x,self.y,)
 
 
-class Boy:
-    def __init__(self):
-        self.x, self.y = 0, 90
-        self.frame = 0
-        self.image = load_image('run_animation.png')
-        self.dir = 1
-
-    def update(self):
-        self.frame = (self.frame + 1) % 8
-        self.x += self.dir
-        if self.x >= 800:
-            self.dir = -1
-        elif self.x <= 0:
-            self.dir = 1
-
-    def draw(self):
-        self.image.clip_draw(self.frame * 100, 0, 100, 100, self.x, self.y)
-
 
 def enter():
     global main_ui,money,windcursor,main_background,birddraw,expedition_confirm,expeditioning
@@ -177,26 +220,19 @@ def handle_events():
             main_state.my = 600-event.y
         elif event.type == SDL_MOUSEMOTION:
             main_state.movemx, main_state.movemy = event.x, 600 - event.y
-
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_UP:
+            game_framework.pop_state
 
 def update():
     global confirm,expedition,start_time
     windcursor.update()
+    birddraw.update()
+    expedition_confirm.update()
     if main_state.mx >= 335 and main_state.mx <= 465 and main_state.my >=22  and main_state.my <= 104:
         game_framework.pop_state()
 
-    if confirm>0:
-        if main_state.mx >= 246 and main_state.mx <= 354 and main_state.my >= 106 and main_state.my <= 175:
-            confirm=0
-        if main_state.mx >= 383 and main_state.mx <= 559 and main_state.my >= 106 and main_state.my <= 175:
-            expedition=1
-            main_state.start_time = get_time()
-            main_state.my=-1
-            main_state.mx=-1
-            main_state.cagebird[confirm].expedition=1
-            confirm=0
-    if main_state.mx >= 252 and main_state.mx <= 390 and main_state.my <= 420 and main_state.my >= 380:
-        confirm = 1
+
+
 
 
 
@@ -207,10 +243,10 @@ def draw():
     main_background.draw()
     money.draw()
     birddraw.draw()
-    if expedition>0:
-        expeditioning.draw()
+    expeditioning.draw()
     if confirm>0:
         expedition_confirm.draw()
+
     windcursor.draw()
     delay(0.03)
     update_canvas()
